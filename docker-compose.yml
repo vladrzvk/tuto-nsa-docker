@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  nginx:
+  # image: nginx:latest
+  # => pour dl sur docker hub 
+  # build:
+  # => si on a deja build une image (contexte: repo localistation)
+    build:
+      context:  .
+      dockerfile: nginx.dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html/public
+    depends_on:
+      - mysql
+      - php
+  
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    environment:
+       MYSQL_DATABASE: laravel
+       MYSQL_USER: laravel
+       MYSQL_PASSWORD: secret
+       MYSQL_ROOT_PASSWORD: secret
+    # si on veut récuperer les données de la bdd il faut ajouter un volume
+    volumes:
+      - ./mysql:/var/lib/mysql
+  
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
